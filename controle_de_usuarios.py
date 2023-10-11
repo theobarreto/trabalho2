@@ -1,4 +1,9 @@
 import bcrypt
+import re
+
+def tem_caracteres_especiais(texto):
+    padrao = r'[!@#$%^&*(),.?":{}|<>]'
+    return bool(re.search(padrao, texto))
 
 class Usuario:
     def __init__(self, username, password):
@@ -41,6 +46,21 @@ def login(usuarios,username,password):
     if not cadastrado:
         print('Usuário não cadastrado')
         return None
+
+
+def cadastrar(usuarios):
+    print('Criação de nova conta')  #Um novo usuário criado sempre terá a hierarquia de user
+    print('Insira seu nome de usuário')
+    username = input()
+    if tem_caracteres_especiais(username):
+        print('O nome de usuário não pode conter caracteres especiais')
+        return usuarios, False
+    print('Insira sua senha')
+    password = input()
+    novo_usuario = Usuario(username, password)
+    usuarios.append(novo_usuario)
+    return usuarios, True
+
     
 user = Usuario('user', 'senha123')
 mod = Moderador('mod', 'senha456') #username e password fixos para moderadores e administradores
@@ -51,15 +71,12 @@ print('Você deseja se cadastrar ou logar?')
 print('1 - Cadastrar')
 print('2 - Logar')
 cadastro = int(input())
+
 if cadastro ==1:
-    print('Criação de nova conta')  #Um novo usuário criado sempre terá a hierarquia de user
-    print('Insira seu nome de usuário')
-    username = input()
-    print('Insira sua senha')
-    password = input()
-    novo_usuario = Usuario(username, password)
-    usuarios.append(novo_usuario)
-    cadastro=2      
+    usuarios, sucesso = cadastrar(usuarios)
+    while not sucesso:
+        usuarios, sucesso = cadastrar(usuarios)
+    cadastro =2
 
 if cadastro == 2:
     print('Login')
@@ -78,4 +95,3 @@ if cadastro == 2:
         
 #O armazenamento de um novo usuário não é persistente
 current_user.permissoes()
-
